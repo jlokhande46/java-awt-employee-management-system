@@ -14,6 +14,7 @@ class ViewFrame extends JFrame
 		c=getContentPane();
 		c.setLayout(new FlowLayout());
 		taView=new TextArea(20,50);
+		taView.setEditable(false);
 		btnViewBack=new JButton("Back");
 		
 		c.add(taView);
@@ -26,7 +27,7 @@ class ViewFrame extends JFrame
 		btnViewBack.addActionListener(a3);
 		
 		DbOperation db =new DbOperation();
-		String data=db.viewStudent();
+		String data=db.viewEmployee();
 		taView.setText(data);
 		
 		setTitle("StudentManagementSystem:ViewFrame");

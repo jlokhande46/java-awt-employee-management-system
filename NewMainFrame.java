@@ -11,16 +11,12 @@ public class MainFrame extends JFrame
 	public MainFrame()
 	{
 		c=getContentPane();
-		c.setLayout(null);
+		c.setLayout(new FlowLayout());
 		btnAdd=new JButton("Add");
 		btnView=new JButton("View");
-		btnUpload=new JButton("Update");
+		btnUpload=new JButton("Upload");
 		btnDelete=new JButton("Delete");
 		
-		btnAdd.setBounds(85,120,95,30);
-		btnView.setBounds(85,170,95,30);
-		btnUpload.setBounds(210,120,95,30);
-		btnDelete.setBounds(210,170,95,30);
 		c.add(btnAdd);
 		c.add(btnView);
 		c.add(btnUpload);
@@ -39,7 +35,7 @@ public class MainFrame extends JFrame
 		btnView.addActionListener(a2);
 		
 		ActionListener a3=(ae)->{
-			UpdateFrame a=new UpdateFrame();
+			UploadFrame a=new UploadFrame();
 			dispose();
 		};
 		btnUpload.addActionListener(a3);
@@ -63,97 +59,49 @@ public class MainFrame extends JFrame
 }
 class Employee
 {
-	private String empid;
+	private int Empid;
 	private String name;
-	private String dob;
-	private String deptid;
-	private String deptname;
-	private String salary;
 	
-	// public Employee()
-	// {
-	// }
-	public Employee(String empid,String name, String dob, String deptid, String deptname, String salary)
+	public Employee()
 	{
-		this.empid=empid;
+	}
+	public Student(int Empid,String name)
+	{
+		this.Empid=Empid;
 		this.name=name;
-		this.dob=dob;
-		this.deptid=deptid;
-		this.deptname=deptname;
-		this.salary=salary;
 	}
-	public String getempid()
+	public int getEmpid()
 	{
-		return empid;
+		return Empid;
 	}
-	public void setempid(String empid)
-	{
-		this.empid=empid;
-	}
-	public String getname()
+	public String getName()
 	{
 		return name;
 	}
-	public void setname(String name)
+	public void setEmpid(int Empid)
+	{
+		this.Empid=Empid;
+	}
+	public void setName(String name)
 	{
 		this.name=name;
-	}
-		public String getdob()
-	{
-		return dob;
-	}
-	public void setdob(String dob)
-	{
-		this.dob=dob;
-	}
-		public String getdeptid()
-	{
-		return deptid;
-	}
-	public void setdeptid(String deptid)
-	{
-		this.deptid=deptid;
-	}
-		public String getdeptname()
-	{
-		return deptname;
-	}
-	public void setdeptname(String deptname)
-	{
-		this.deptname=deptname;
-	}
-		public String getsalary()
-	{
-		return salary;
-	}
-	public void setsalary(String salary)
-	{
-		this.salary=salary;
 	}
 }
 class DbOperation
 {
-	public void addEmployee(Employee emp)
+	public void addEmployee(Employee e)
 	{
 		try
 		{
 			DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
 			Connection con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","system","admin");
 			
-			String s1="insert into employee values(?,?,?,?,?,?)";
+			String s1="insert into student values(?,?)";
 			PreparedStatement pst=con.prepareStatement(s1);
-			String empid=emp.getempid();
-			String name=emp.getname();
-			String dob=emp.getdob();
-			String deptid=emp.getdeptid();
-			String deptname=emp.getdeptname();
-			String salary=emp.getsalary();
-			pst.setString(1,empid);
+			int empid=s.getEmpid();
+			String name=s.getName();
+			pst.setInt(1,Empid);
 			pst.setString(2,name);
-			pst.setString(3,dob);
-			pst.setString(4,deptid);
-			pst.setString(5,deptname);
-			pst.setString(6,salary);
 			int r=pst.executeUpdate();
 			JOptionPane.showMessageDialog(new JDialog(),r+"record inserted");
 			pst.close();
@@ -162,30 +110,26 @@ class DbOperation
 		catch(SQLException e)
 		{
 			JOptionPane.showMessageDialog(new JDialog(),"Insert Issues:"+e);
-			System.out.println(e);
 		}
 	}
 	
 	public String viewEmployee()
 	{
-		StringBuffer sb=new StringBuffer();
+					StringBuffer sb=new StringBuffer();
+
 		try
 		{
 			DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
 			Connection con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","system","admin");
 			
-			String s1="select * from employee";
+			String s1="select *from student";
 			Statement s2=con.createStatement();
 			ResultSet rs=s2.executeQuery(s1);
 			while(rs.next())
 			{
-				String empid=rs.getString(1);
+				int rno=rs.getInt(1);
 				String name=rs.getString(2);
-				String dob =rs.getString(3);
-				String deptid =rs.getString(4);
-				String deptname =rs.getString(5);
-				String sal =rs.getString(6);
-				sb.append("Empid: "+empid+" Name: "+name+" Deptid: "+deptid+" Salary: "+sal+"\n");
+				sb.append("Rno:"+rno+"\tName:"+name+"\n");
 			}
 			rs.close();
 			s2.close();
@@ -198,27 +142,19 @@ class DbOperation
 		return sb.toString();	
 	}
 	
-	public void updateEmployee(Employee emp)
+	public void updateEmployee(Employee e)
 	{
 		try
 		{
 			DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
 			Connection con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","system","admin");
 			
-			String s1="update employee set name=?,dob=?,deptid=?,deptname=?,sal=? where empid=?";
+			String s1="update employee set name=? where rno=?";
 			PreparedStatement pst=con.prepareStatement(s1);
-			String empid=emp.getempid();
-			String name=emp.getname();
-			String dob=emp.getdob();
-			String deptid=emp.getdeptid();
-			String deptname=emp.getdeptname();
-			String sal=emp.getsalary();
+			int rno=s.getEmpid();
+			String name=s.getName();
 			pst.setString(1,name);
-			pst.setString(2,dob);
-			pst.setString(3,deptid);
-			pst.setString(4,deptname);
-			pst.setString(5,sal);
-			pst.setString(6,empid);
+			pst.setInt(2,empid);
 			int r=pst.executeUpdate();
 			JOptionPane.showMessageDialog(new JDialog(),r+"record updated");
 			pst.close();
@@ -230,17 +166,19 @@ class DbOperation
 		}
 	}
 	
-	public void deleteEmployee(Employee emp)
+	public void deleteEmployee(Employee e)
 	{
 		try
 		{
 			DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
 			Connection con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","system","admin");
 			
-			String s1="delete from employee where empid=?";
+			String s1="delete from student where rno=?";
 			PreparedStatement pst=con.prepareStatement(s1);
-			String empid=emp.getempid();
-			pst.setString(1,empid);
+			int empid=s.getEmpid();
+			//String name=s.getName();
+			pst.setInt(1,empid);
+			//pst.setString(2,name);
 			int r=pst.executeUpdate();
 			JOptionPane.showMessageDialog(new JDialog(),r+"record deleted");
 			pst.close();

@@ -14,7 +14,7 @@ class DeleteFrame extends JFrame
 	{
 		c=getContentPane();
 		c.setLayout(new FlowLayout());
-		lblDeleteRno=new JLabel("Enter ID of Student whose data use want Delete:");
+		lblDeleteRno=new JLabel("Enter ID of Employee whose data you want Delete:");
 		txtDeleteRno=new JTextField(30);
 		btnDeleteSave=new JButton("Save");
 		btnDeleteBack=new JButton("Back");
@@ -27,13 +27,9 @@ class DeleteFrame extends JFrame
 		
 		ActionListener a6=(ae)->{
 					String rno=txtDeleteRno.getText();
-					//String name=txtAddName.getText();
-					Student s=new Student(Integer.parseInt(rno),null);
+					Employee e=new Employee(rno,null,null,null,null,null);
 					DbOperation db=new DbOperation();
-					db.deleteStudent(s);
-
-			
-			
+					db.deleteEmployee(e);
 		};
 		btnDeleteSave.addActionListener(a6);
 		
@@ -44,7 +40,7 @@ class DeleteFrame extends JFrame
 		btnDeleteBack.addActionListener(a7);
 		
 		
-		setTitle("StudentManagementSystem:DeleteFrame");
+		setTitle("EmployeeManagementSystem:DeleteFrame");
 		setSize(400,400);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
